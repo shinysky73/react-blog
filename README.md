@@ -1,6 +1,7 @@
 # React & NestJS 블로그 플랫폼
 
-React (Vite)와 NestJS를 사용하여 구축한 모던 풀스택 블로그 플랫폼입니다. 이 프로젝트는 JWT 기반의 안전한 사용자 인증 시스템과 게시물 CRUD(생성, 읽기, 수정, 삭제) 기능을 중심으로 구현되었습니다.
+React (Vite)와 NestJS를 사용하여 구축한 모던 풀스택 블로그 예제 플랫폼 입니다.
+이 프로젝트는 JWT 기반의 안전한 사용자 인증 시스템과 게시물 CRUD(생성, 읽기, 수정, 삭제) 기능을 중심으로 구현되었습니다.
 
 ## ✨ 주요 기능
 
@@ -15,6 +16,7 @@ React (Vite)와 NestJS를 사용하여 구축한 모던 풀스택 블로그 플�
 ## 🛠️ 기술 스택
 
 ### **Frontend**
+
 - **Framework**: React (with Vite)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS, shadcn/ui
@@ -24,6 +26,7 @@ React (Vite)와 NestJS를 사용하여 구축한 모던 풀스택 블로그 플�
 - **Form Management**: React Hook Form, Zod
 
 ### **Backend**
+
 - **Framework**: NestJS
 - **Language**: TypeScript
 - **ORM**: Prisma
@@ -32,30 +35,37 @@ React (Vite)와 NestJS를 사용하여 구축한 모던 풀스택 블로그 플�
 - **Security**: bcrypt
 
 ### **Tooling & Environment**
+
 - **Package Manager**: pnpm (with Workspaces)
 - **Linting/Formatting**: ESLint, Prettier
 
 ## 🚀 시작하기
 
 ### 사전 요구사항
+
 - Node.js (v18 이상 권장)
 - pnpm
 - PostgreSQL 데이터베이스
 
 ### 설치 및 설정
+
 1.  **저장소 복제:**
+
     ```bash
-    git clone <repository-url>
-    cd react-auth
+    git clone https://github.com/shinysky73/react-blog.git
+    cd react-blog
     ```
 
 2.  **의존성 설치 (루트 디렉터리에서 실행):**
+
     ```bash
     pnpm install
     ```
 
 3.  **백엔드 환경 변수 설정:**
+
     - `backend` 디렉터리에 `.env` 파일을 생성하고 아래 내용을 채워주세요.
+
     ```env
     # PostgreSQL 연결 정보 (사용자, 비밀번호, 호스트, 포트, 데이터베이스명)
     DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
@@ -75,9 +85,11 @@ React (Vite)와 NestJS를 사용하여 구축한 모던 풀스택 블로그 플�
 애플리케이션을 실행하려면 두 개의 터미널이 필요합니다.
 
 1.  **백엔드 서버 실행 (첫 번째 터미널):**
+
     ```bash
     pnpm --filter backend run start:dev
     ```
+
     - 서버는 `http://localhost:3000`에서 실행됩니다.
 
 2.  **프런트엔드 서버 실행 (두 번째 터미널):**
@@ -89,6 +101,7 @@ React (Vite)와 NestJS를 사용하여 구축한 모던 풀스택 블로그 플�
 ## ✅ 주요 스크립트
 
 - **백엔드 테스트 실행:**
+
   ```bash
   # Unit Tests
   pnpm --filter backend run test
@@ -98,6 +111,7 @@ React (Vite)와 NestJS를 사용하여 구축한 모던 풀스택 블로그 플�
   ```
 
 - **Linter 실행:**
+
   ```bash
   # Frontend
   pnpm --filter frontend run lint
