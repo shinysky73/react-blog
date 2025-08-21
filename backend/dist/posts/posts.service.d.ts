@@ -5,43 +5,43 @@ export declare class PostsService {
     private prisma;
     constructor(prisma: PrismaService);
     create(dto: CreatePostDto, userId: number): Promise<{
-        title: string;
-        content: string | null;
         id: number;
-        authorId: number;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
+        content: string | null;
+        authorId: number;
     }>;
     findAllForUser(userId: number): Promise<{
-        title: string;
-        content: string | null;
         id: number;
-        authorId: number;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
+        content: string | null;
+        authorId: number;
     }[]>;
     findOne(id: number): Promise<{
-        title: string;
-        content: string | null;
         id: number;
-        authorId: number;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
+        content: string | null;
+        authorId: number;
     } | null>;
     update(id: number, dto: UpdatePostDto, userId: number): Promise<{
-        title: string;
-        content: string | null;
         id: number;
-        authorId: number;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
+        content: string | null;
+        authorId: number;
     }>;
     remove(id: number, userId: number): Promise<{
-        title: string;
-        content: string | null;
         id: number;
-        authorId: number;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
+        content: string | null;
+        authorId: number;
     }>;
 }
