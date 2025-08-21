@@ -1,3 +1,4 @@
+import React from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -8,19 +9,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Button } from './ui/button';
-import { Link } from 'react-router-dom';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deletePost } from '@/lib/api';
-import { toast } from 'sonner';
+} from "@/components/ui/card";
+import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deletePost } from "@/lib/api";
+import { toast } from "sonner";
 
 interface PostCardProps {
   post: {
@@ -30,17 +31,17 @@ interface PostCardProps {
   };
 }
 
-export default function PostCard({ post }: PostCardProps) {
+const PostCard = React.memo(({ post }: PostCardProps) => {
   const queryClient = useQueryClient();
-
+  console.log("PostCard rendered");
   const mutation = useMutation({
     mutationFn: () => deletePost(post.id),
     onSuccess: () => {
-      toast.success('Post deleted successfully!');
-      queryClient.invalidateQueries({ queryKey: ['posts'] });
+      toast.success("Post deleted successfully!");
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
     onError: (error) => {
-      toast.error('Failed to delete post', {
+      toast.error("Failed to delete post", {
         description: error.message,
       });
     },
@@ -61,7 +62,7 @@ export default function PostCard({ post }: PostCardProps) {
       </CardHeader>
       <CardContent className="h-40">
         <p className="text-sm text-muted-foreground line-clamp-6">
-          {post.content || 'No content'}
+          {post.content || "No content"}
         </p>
       </CardContent>
       <CardFooter className="flex justify-end gap-2">
@@ -77,7 +78,7 @@ export default function PostCard({ post }: PostCardProps) {
               className="w-16 h-7 text-xs"
               disabled={mutation.isPending}
             >
-              {mutation.isPending ? 'Deleting...' : 'Delete'}
+              {mutation.isPending ? "Deleting..." : "Delete"}
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
@@ -99,4 +100,6 @@ export default function PostCard({ post }: PostCardProps) {
       </CardFooter>
     </Card>
   );
-}
+});
+
+export default PostCard;

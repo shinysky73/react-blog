@@ -14,13 +14,17 @@ import { useAuthStore } from "@/stores/authStore";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuthStore();
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    emailRef.current?.focus();
+  }, []);
 
   const mutation = useMutation({
     mutationFn: (data: any) => api.post("/auth/login", data),
