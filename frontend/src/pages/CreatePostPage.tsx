@@ -27,10 +27,7 @@ const createPostSchema = z.object({
   categoryIds: z
     .array(z.number())
     .min(1, { message: "At least one category must be selected" }),
-  tagNames: z
-    .string()
-    .optional()
-    .transform((val) => val?.split(",").map((tag) => tag.trim()) || []),
+  tagNames: z.string().optional(),
   status: z.enum(["DRAFT", "PUBLISHED"]).default("DRAFT"),
   visibility: z.enum(["PUBLIC", "PRIVATE"]).default("PRIVATE"),
   isAnnouncement: z.boolean().default(false),
@@ -59,12 +56,13 @@ export default function CreatePostPage() {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<CreatePostSchema>({
+  } = useForm({
     resolver: zodResolver(createPostSchema),
     defaultValues: {
       categoryIds: [],
-      status: "DRAFT",
-      visibility: "PRIVATE",
+      status: "DRAFT" as const,
+      visibility: "PRIVATE" as const,
+      isAnnouncement: false,
     },
   });
 
@@ -82,7 +80,11 @@ export default function CreatePostPage() {
   });
 
   const onSubmit = (data: CreatePostSchema) => {
-    mutation.mutate(data);
+    const transformedData = {
+      ...data,
+      tagNames: data.tagNames?.split(",").map((tag) => tag.trim()) || [],
+    };
+    mutation.mutate(transformedData);
   };
 
   return (
