@@ -36,27 +36,57 @@ let PostsService = class PostsService {
             },
         });
     }
-    async findAllPublic() {
-        return this.prisma.post.findMany({
-            where: {
-                status: 'PUBLISHED',
-                visibility: 'PUBLIC',
-            },
-            include: {
-                categories: true,
-                tags: true,
-                author: {
-                    select: {
-                        id: true,
-                        email: true,
-                        department: true,
+    async findAllPublic(query) {
+        const { page = 1, limit = 10, categoryId, keyword } = query;
+        const skip = (page - 1) * limit;
+        const where = {
+            status: 'PUBLISHED',
+            visibility: 'PUBLIC',
+        };
+        if (categoryId) {
+            where.categories = {
+                some: {
+                    id: categoryId,
+                },
+            };
+        }
+        if (keyword) {
+            where.OR = [
+                { title: { contains: keyword, mode: 'insensitive' } },
+                { content: { contains: keyword, mode: 'insensitive' } },
+            ];
+        }
+        const [posts, total] = await this.prisma.$transaction([
+            this.prisma.post.findMany({
+                where,
+                skip,
+                take: limit,
+                include: {
+                    categories: true,
+                    tags: true,
+                    author: {
+                        select: {
+                            id: true,
+                            email: true,
+                            department: true,
+                        },
+                    },
+                    _count: {
+                        select: { likes: true },
                     },
                 },
-            },
-            orderBy: {
-                createdAt: 'desc',
-            },
-        });
+                orderBy: {
+                    createdAt: 'desc',
+                },
+            }),
+            this.prisma.post.count({ where }),
+        ]);
+        return {
+            data: posts,
+            page,
+            limit,
+            total,
+        };
     }
     async findAllForUser(userId) {
         return this.prisma.post.findMany({
@@ -66,14 +96,17 @@ let PostsService = class PostsService {
             include: {
                 categories: true,
                 tags: true,
+                _count: {
+                    select: { likes: true },
+                },
             },
             orderBy: {
                 createdAt: 'desc',
             },
         });
     }
-    async findOne(id) {
-        return this.prisma.post.findUnique({
+    async findOne(id, userId) {
+        const post = await this.prisma.post.findUnique({
             where: { id },
             include: {
                 categories: true,
@@ -83,8 +116,42 @@ let PostsService = class PostsService {
                         department: true,
                     },
                 },
+                comments: {
+                    where: { parentId: null },
+                    include: {
+                        author: {
+                            select: { id: true, email: true, department: { select: { name: true } } },
+                        },
+                        replies: {
+                            include: {
+                                author: {
+                                    select: { id: true, email: true, department: { select: { name: true } } },
+                                },
+                            },
+                        },
+                    },
+                    orderBy: { createdAt: 'asc' },
+                },
+                _count: {
+                    select: { likes: true },
+                },
             },
         });
+        if (!post)
+            return null;
+        let userHasLiked = false;
+        if (userId) {
+            const like = await this.prisma.like.findUnique({
+                where: {
+                    userId_postId: {
+                        userId,
+                        postId: id,
+                    },
+                },
+            });
+            userHasLiked = !!like;
+        }
+        return { ...post, userHasLiked };
     }
     async update(id, dto, userId) {
         const post = await this.prisma.post.findUnique({

@@ -15,6 +15,7 @@ api.interceptors.request.use((config) => {
 
 export default api;
 
+// Posts
 export const createPost = async (data: {
   title: string;
   content?: string;
@@ -26,8 +27,13 @@ export const createPost = async (data: {
   return api.post("/posts", data);
 };
 
-export const getPosts = async () => {
-  const { data } = await api.get("/posts");
+export const getPosts = async (params?: {
+  page?: number;
+  limit?: number;
+  categoryId?: number;
+  keyword?: string;
+}) => {
+  const { data } = await api.get("/posts", { params });
   return data;
 };
 
@@ -52,6 +58,7 @@ export const deletePost = async (id: number) => {
   return api.delete(`/posts/${id}`);
 };
 
+// Departments & Categories
 export const getDepartments = async () => {
   const { data } = await api.get("/departments");
   return data;
@@ -60,4 +67,22 @@ export const getDepartments = async () => {
 export const getCategories = async () => {
   const { data } = await api.get("/categories");
   return data;
+};
+
+// Comments
+export const createComment = async (data: {
+  content: string;
+  postId: number;
+  parentId?: number;
+}) => {
+  return api.post("/comments", data);
+};
+
+export const deleteComment = async (id: number) => {
+  return api.delete(`/comments/${id}`);
+};
+
+// Likes
+export const toggleLike = async (postId: number) => {
+  return api.post("/likes/toggle", { postId });
 };

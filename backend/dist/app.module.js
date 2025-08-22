@@ -18,6 +18,8 @@ const posts_module_1 = require("./posts/posts.module");
 const departments_module_1 = require("./departments/departments.module");
 const categories_module_1 = require("./categories/categories.module");
 const tags_module_1 = require("./tags/tags.module");
+const comments_module_1 = require("./comments/comments.module");
+const likes_module_1 = require("./likes/likes.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -34,6 +36,8 @@ exports.AppModule = AppModule = __decorate([
             departments_module_1.DepartmentsModule,
             categories_module_1.CategoriesModule,
             tags_module_1.TagsModule,
+            comments_module_1.CommentsModule,
+            likes_module_1.LikesModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

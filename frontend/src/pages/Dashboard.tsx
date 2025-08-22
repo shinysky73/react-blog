@@ -1,13 +1,16 @@
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { getMyPosts } from "@/lib/api";
-import PostCard from "@/components/PostCard";
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { getMyPosts } from '@/lib/api';
+import PostCard from '@/components/PostCard';
 
 interface Post {
   id: number;
   title: string;
   content: string | null;
+  _count: {
+    likes: number;
+  };
 }
 
 export default function DashboardPage() {
@@ -16,7 +19,7 @@ export default function DashboardPage() {
     isLoading,
     isError,
   } = useQuery<Post[]>({
-    queryKey: ["my-posts"],
+    queryKey: ['my-posts'],
     queryFn: getMyPosts,
   });
 

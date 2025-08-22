@@ -9,6 +9,8 @@ import { PostsModule } from './posts/posts.module';
 import { DepartmentsModule } from './departments/departments.module';
 import { CategoriesModule } from './categories/categories.module';
 import { TagsModule } from './tags/tags.module';
+import { CommentsModule } from './comments/comments.module';
+import { LikesModule } from './likes/likes.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { TagsModule } from './tags/tags.module';
     DepartmentsModule,
     CategoriesModule,
     TagsModule,
+    CommentsModule,
+    LikesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

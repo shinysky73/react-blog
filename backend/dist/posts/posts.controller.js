@@ -13,11 +13,13 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostsController = void 0;
+const passport_1 = require("@nestjs/passport");
 const common_1 = require("@nestjs/common");
 const posts_service_1 = require("./posts.service");
 const create_post_dto_1 = require("./dto/create-post.dto");
 const update_post_dto_1 = require("./dto/update-post.dto");
 const jwt_guard_1 = require("../auth/guard/jwt.guard");
+const findAll_posts_dto_1 = require("./dto/findAll-posts.dto");
 let PostsController = class PostsController {
     postsService;
     constructor(postsService) {
@@ -27,15 +29,16 @@ let PostsController = class PostsController {
         const userId = req.user.id;
         return this.postsService.create(createPostDto, userId);
     }
-    findAllPublic() {
-        return this.postsService.findAllPublic();
+    findAllPublic(query) {
+        return this.postsService.findAllPublic(query);
     }
     findAllForUser(req) {
         const userId = req.user.id;
         return this.postsService.findAllForUser(userId);
     }
-    findOne(id) {
-        return this.postsService.findOne(id);
+    findOne(id, req) {
+        const user = req.user;
+        return this.postsService.findOne(id, user?.id);
     }
     update(id, updatePostDto, req) {
         const userId = req.user.id;
@@ -58,8 +61,9 @@ __decorate([
 ], PostsController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [findAll_posts_dto_1.FindAllPostsDto]),
     __metadata("design:returntype", void 0)
 ], PostsController.prototype, "findAllPublic", null);
 __decorate([
@@ -71,10 +75,12 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PostsController.prototype, "findAllForUser", null);
 __decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", void 0)
 ], PostsController.prototype, "findOne", null);
 __decorate([

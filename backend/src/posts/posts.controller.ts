@@ -1,3 +1,4 @@
+import { AuthGuard } from '@nestjs/passport';
 import {
   Body,
   Controller,
@@ -7,6 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -15,6 +17,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import type { Request } from 'express';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { JwtGuard } from 'src/auth/guard/jwt.guard';
+import { FindAllPostsDto } from './dto/findAll-posts.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -28,8 +31,8 @@ export class PostsController {
   }
 
   @Get()
-  findAllPublic() {
-    return this.postsService.findAllPublic();
+  findAllPublic(@Query() query: FindAllPostsDto) {
+    return this.postsService.findAllPublic(query);
   }
 
   @UseGuards(JwtGuard)
@@ -39,9 +42,12 @@ export class PostsController {
     return this.postsService.findAllForUser(userId);
   }
 
+
+  @UseGuards(AuthGuard('jwt'))
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.postsService.findOne(id);
+  findOne(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
+    const user = req.user as { id: number } | undefined;
+    return this.postsService.findOne(id, user?.id);
   }
 
   @UseGuards(JwtGuard)

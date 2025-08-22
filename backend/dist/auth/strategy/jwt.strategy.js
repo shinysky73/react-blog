@@ -11,18 +11,24 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JwtStrategy = void 0;
 const common_1 = require("@nestjs/common");
-const config_1 = require("@nestjs/config");
 const passport_1 = require("@nestjs/passport");
 const passport_jwt_1 = require("passport-jwt");
+const config_1 = require("@nestjs/config");
 const prisma_service_1 = require("../../prisma/prisma.service");
-let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
+let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy, 'jwt') {
+    configService;
     prisma;
-    constructor(prisma, configService) {
+    constructor(configService, prisma) {
+        const jwtSecret = configService.get('JWT_SECRET');
+        if (!jwtSecret) {
+            throw new Error('JWT_SECRET is not defined in the environment variables');
+        }
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: configService.getOrThrow('JWT_SECRET'),
+            secretOrKey: jwtSecret,
         });
+        this.configService = configService;
         this.prisma = prisma;
     }
     async validate(payload) {
@@ -30,7 +36,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
             where: { id: payload.sub },
         });
         if (!user) {
-            throw new common_1.UnauthorizedException();
+            return null;
         }
         const { password, ...result } = user;
         return result;
@@ -39,6 +45,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
 exports.JwtStrategy = JwtStrategy;
 exports.JwtStrategy = JwtStrategy = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService, config_1.ConfigService])
+    __metadata("design:paramtypes", [config_1.ConfigService,
+        prisma_service_1.PrismaService])
 ], JwtStrategy);
 //# sourceMappingURL=jwt.strategy.js.map
