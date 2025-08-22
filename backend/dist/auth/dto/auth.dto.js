@@ -9,22 +9,43 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthDto = void 0;
+exports.LoginDto = exports.SignUpDto = void 0;
 const class_validator_1 = require("class-validator");
-class AuthDto {
+class SignUpDto {
     email;
     password;
+    departmentId;
 }
-exports.AuthDto = AuthDto;
+exports.SignUpDto = SignUpDto;
 __decorate([
     (0, class_validator_1.IsEmail)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], AuthDto.prototype, "email", void 0);
+], SignUpDto.prototype, "email", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.MinLength)(8, { message: 'Password must be at least 8 characters long' }),
     __metadata("design:type", String)
-], AuthDto.prototype, "password", void 0);
+], SignUpDto.prototype, "password", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], SignUpDto.prototype, "departmentId", void 0);
+class LoginDto {
+    email;
+    password;
+}
+exports.LoginDto = LoginDto;
+__decorate([
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], LoginDto.prototype, "email", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], LoginDto.prototype, "password", void 0);
 //# sourceMappingURL=auth.dto.js.map

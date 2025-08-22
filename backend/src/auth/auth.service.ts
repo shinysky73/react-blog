@@ -5,15 +5,15 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { AuthDto } from './dto/auth.dto';
+import { LoginDto, SignUpDto } from './dto/auth.dto';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(private prisma: PrismaService, private jwtService: JwtService) {}
 
-  async signUp(dto: AuthDto) {
-    const { email, password } = dto;
+  async signUp(dto: SignUpDto) {
+    const { email, password, departmentId } = dto;
 
     const user = await this.prisma.user.findUnique({
       where: {
@@ -25,12 +25,21 @@ export class AuthService {
       throw new ConflictException('Email already exists');
     }
 
+    const department = await this.prisma.department.findUnique({
+      where: { id: departmentId },
+    });
+
+    if (!department) {
+      throw new ConflictException('Department not found');
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await this.prisma.user.create({
       data: {
         email,
         password: hashedPassword,
+        departmentId,
       },
     });
 
@@ -39,7 +48,7 @@ export class AuthService {
     return result;
   }
 
-  async login(dto: AuthDto) {
+  async login(dto: LoginDto) {
     const { email, password } = dto;
 
     const user = await this.prisma.user.findUnique({

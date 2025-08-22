@@ -18,12 +18,43 @@ let PostsService = class PostsService {
         this.prisma = prisma;
     }
     async create(dto, userId) {
-        const { title, content } = dto;
+        const { title, content, categoryIds, tagNames, status, visibility } = dto;
+        const tags = tagNames ? await this.upsertTags(tagNames) : [];
         return this.prisma.post.create({
             data: {
                 title,
                 content,
+                status,
+                visibility,
                 authorId: userId,
+                categories: {
+                    connect: categoryIds.map((id) => ({ id })),
+                },
+                tags: {
+                    connect: tags.map((tag) => ({ id: tag.id })),
+                },
+            },
+        });
+    }
+    async findAllPublic() {
+        return this.prisma.post.findMany({
+            where: {
+                status: 'PUBLISHED',
+                visibility: 'PUBLIC',
+            },
+            include: {
+                categories: true,
+                tags: true,
+                author: {
+                    select: {
+                        id: true,
+                        email: true,
+                        department: true,
+                    },
+                },
+            },
+            orderBy: {
+                createdAt: 'desc',
             },
         });
     }
@@ -31,6 +62,10 @@ let PostsService = class PostsService {
         return this.prisma.post.findMany({
             where: {
                 authorId: userId,
+            },
+            include: {
+                categories: true,
+                tags: true,
             },
             orderBy: {
                 createdAt: 'desc',
@@ -40,6 +75,15 @@ let PostsService = class PostsService {
     async findOne(id) {
         return this.prisma.post.findUnique({
             where: { id },
+            include: {
+                categories: true,
+                tags: true,
+                author: {
+                    include: {
+                        department: true,
+                    },
+                },
+            },
         });
     }
     async update(id, dto, userId) {
@@ -49,9 +93,19 @@ let PostsService = class PostsService {
         if (!post || post.authorId !== userId) {
             throw new common_1.ForbiddenException('Access to resource denied');
         }
+        const { categoryIds, tagNames, ...restDto } = dto;
+        const tags = tagNames ? await this.upsertTags(tagNames) : [];
         return this.prisma.post.update({
             where: { id },
-            data: dto,
+            data: {
+                ...restDto,
+                categories: categoryIds
+                    ? { set: categoryIds.map((id) => ({ id })) }
+                    : undefined,
+                tags: tagNames
+                    ? { set: tags.map((tag) => ({ id: tag.id })) }
+                    : undefined,
+            },
         });
     }
     async remove(id, userId) {
@@ -64,6 +118,13 @@ let PostsService = class PostsService {
         return this.prisma.post.delete({
             where: { id },
         });
+    }
+    async upsertTags(tagNames) {
+        return Promise.all(tagNames.map((name) => this.prisma.tag.upsert({
+            where: { name },
+            update: {},
+            create: { name },
+        })));
     }
 };
 exports.PostsService = PostsService;

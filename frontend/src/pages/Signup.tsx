@@ -9,25 +9,45 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import api from "@/lib/api";
-import { useMutation } from "@tanstack/react-query";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import api, { getDepartments } from "@/lib/api";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { toast } from "sonner";
+
+interface Department {
+  id: number;
+  name: string;
+}
 
 export default function SignupPage() {
   const navigate = useNavigate();
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
+  const [departmentId, setDepartmentId] = useState<string>("");
+
+  const { data: departments, isLoading: isLoadingDepartments } = useQuery<Department[]>({
+    queryKey: ['departments'],
+    queryFn: getDepartments,
+  });
 
   const mutation = useMutation({
     mutationFn: (data: any) => api.post("/auth/signup", data),
     onSuccess: () => {
-      // Add toast notification here
+      toast.success("Account created successfully! Please login.");
       navigate("/login");
     },
-    onError: (error) => {
-      // Add toast notification here
+    onError: (error: any) => {
+      const errorMessage = error.response?.data?.message || "Signup failed. Please try again.";
+      toast.error(errorMessage);
       console.error("Signup failed:", error);
     },
   });
@@ -39,12 +59,16 @@ export default function SignupPage() {
     const confirmPassword = confirmPasswordRef.current?.value;
 
     if (password !== confirmPassword) {
-      // Add toast notification here
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
-    mutation.mutate({ email, password });
+    if (!departmentId) {
+      toast.error("Please select a department");
+      return;
+    }
+
+    mutation.mutate({ email, password, departmentId: parseInt(departmentId) });
   };
 
   return (
@@ -54,7 +78,7 @@ export default function SignupPage() {
           <CardHeader>
             <CardTitle className="text-2xl">Sign Up</CardTitle>
             <CardDescription>
-              Enter your email below to create your account.
+              Enter your information below to create your account.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
@@ -67,6 +91,25 @@ export default function SignupPage() {
                 required
                 ref={emailRef}
               />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="department">Department</Label>
+              <Select onValueChange={setDepartmentId} value={departmentId}>
+                <SelectTrigger id="department">
+                  <SelectValue placeholder="Select a department" />
+                </SelectTrigger>
+                <SelectContent>
+                  {isLoadingDepartments ? (
+                    <SelectItem value="loading" disabled>Loading...</SelectItem>
+                  ) : (
+                    departments?.map((dept) => (
+                      <SelectItem key={dept.id} value={String(dept.id)}>
+                        {dept.name}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>

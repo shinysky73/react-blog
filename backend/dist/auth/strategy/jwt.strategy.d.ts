@@ -12,6 +12,7 @@ export declare class JwtStrategy extends JwtStrategy_base {
         email: string;
     }): Promise<{
         email: string;
+        departmentId: number;
         id: number;
         createdAt: Date;
         updatedAt: Date;

@@ -1,12 +1,17 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { UsersService } from './users.service';
+import { JwtGuard } from 'src/auth/guard/jwt.guard';
 import type { Request } from 'express';
 
+@UseGuards(JwtGuard)
 @Controller('users')
 export class UsersController {
-  @UseGuards(AuthGuard('jwt'))
+  constructor(private usersService: UsersService) {}
+
   @Get('profile')
   getProfile(@Req() req: Request) {
-    return req.user;
+    // req.user is populated by the JwtStrategy
+    const user = req.user as { id: number; email: string };
+    return this.usersService.findOne(user.id);
   }
 }

@@ -1,18 +1,18 @@
-import { useEffect, lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Layout from './components/Layout';
-import PublicLayout from './components/PublicLayout';
-import { useAuthStore } from './stores/authStore';
-import ProtectedRoute from './components/ProtectedRoute';
-import { Toaster } from 'sonner';
+import { useEffect, lazy, Suspense } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
+import PublicLayout from "./components/PublicLayout";
+import { useAuthStore } from "./stores/authStore";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { Toaster } from "sonner";
 
-const HomePage = lazy(() => import('./pages/Home'));
-const LoginPage = lazy(() => import('./pages/Login'));
-const SignupPage = lazy(() => import('./pages/Signup'));
-const DashboardPage = lazy(() => import('./pages/Dashboard'));
-const CreatePostPage = lazy(() => import('./pages/CreatePost'));
-const EditPostPage = lazy(() => import('./pages/EditPostPage'));
-const PostDetailPage = lazy(() => import('./pages/PostDetailPage'));
+const HomePage = lazy(() => import("./pages/Home"));
+const LoginPage = lazy(() => import("./pages/Login"));
+const SignupPage = lazy(() => import("./pages/Signup"));
+const DashboardPage = lazy(() => import("./pages/Dashboard"));
+const CreatePostPage = lazy(() => import("./pages/CreatePostPage"));
+const EditPostPage = lazy(() => import("./pages/EditPostPage"));
+const PostDetailPage = lazy(() => import("./pages/PostDetailPage"));
 
 function App() {
   const { checkAuth } = useAuthStore();
@@ -52,4 +52,3 @@ function App() {
 }
 
 export default App;
-

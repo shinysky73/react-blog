@@ -14,10 +14,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostsController = void 0;
 const common_1 = require("@nestjs/common");
-const passport_1 = require("@nestjs/passport");
 const posts_service_1 = require("./posts.service");
 const create_post_dto_1 = require("./dto/create-post.dto");
 const update_post_dto_1 = require("./dto/update-post.dto");
+const jwt_guard_1 = require("../auth/guard/jwt.guard");
 let PostsController = class PostsController {
     postsService;
     constructor(postsService) {
@@ -26,6 +26,9 @@ let PostsController = class PostsController {
     create(createPostDto, req) {
         const userId = req.user.id;
         return this.postsService.create(createPostDto, userId);
+    }
+    findAllPublic() {
+        return this.postsService.findAllPublic();
     }
     findAllForUser(req) {
         const userId = req.user.id;
@@ -45,6 +48,7 @@ let PostsController = class PostsController {
 };
 exports.PostsController = PostsController;
 __decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Req)()),
@@ -54,6 +58,13 @@ __decorate([
 ], PostsController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], PostsController.prototype, "findAllPublic", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, common_1.Get)('my-posts'),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -67,6 +78,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PostsController.prototype, "findOne", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
@@ -76,6 +88,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PostsController.prototype, "update", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Req)()),
@@ -84,7 +97,6 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PostsController.prototype, "remove", null);
 exports.PostsController = PostsController = __decorate([
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     (0, common_1.Controller)('posts'),
     __metadata("design:paramtypes", [posts_service_1.PostsService])
 ], PostsController);

@@ -11,9 +11,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdatePostDto = void 0;
 const class_validator_1 = require("class-validator");
+const prisma_1 = require("../../../generated/prisma");
 class UpdatePostDto {
     title;
     content;
+    categoryIds;
+    tagNames;
+    status;
+    visibility;
 }
 exports.UpdatePostDto = UpdatePostDto;
 __decorate([
@@ -26,4 +31,26 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdatePostDto.prototype, "content", void 0);
+__decorate([
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsNumber)({}, { each: true }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Array)
+], UpdatePostDto.prototype, "categoryIds", void 0);
+__decorate([
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsString)({ each: true }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Array)
+], UpdatePostDto.prototype, "tagNames", void 0);
+__decorate([
+    (0, class_validator_1.IsEnum)(prisma_1.Status),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdatePostDto.prototype, "status", void 0);
+__decorate([
+    (0, class_validator_1.IsEnum)(prisma_1.Visibility),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdatePostDto.prototype, "visibility", void 0);
 //# sourceMappingURL=update-post.dto.js.map

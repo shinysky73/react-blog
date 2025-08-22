@@ -10,17 +10,17 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import type { Request } from 'express';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { JwtGuard } from 'src/auth/guard/jwt.guard';
 
-@UseGuards(AuthGuard('jwt'))
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
+  @UseGuards(JwtGuard)
   @Post()
   create(@Body() createPostDto: CreatePostDto, @Req() req: Request) {
     const userId = (req.user as any).id;
@@ -28,6 +28,12 @@ export class PostsController {
   }
 
   @Get()
+  findAllPublic() {
+    return this.postsService.findAllPublic();
+  }
+
+  @UseGuards(JwtGuard)
+  @Get('my-posts')
   findAllForUser(@Req() req: Request) {
     const userId = (req.user as any).id;
     return this.postsService.findAllForUser(userId);
@@ -38,6 +44,7 @@ export class PostsController {
     return this.postsService.findOne(id);
   }
 
+  @UseGuards(JwtGuard)
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -48,6 +55,7 @@ export class PostsController {
     return this.postsService.update(id, updatePostDto, userId);
   }
 
+  @UseGuards(JwtGuard)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
     const userId = (req.user as any).id;

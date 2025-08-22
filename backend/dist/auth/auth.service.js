@@ -55,7 +55,7 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
     }
     async signUp(dto) {
-        const { email, password } = dto;
+        const { email, password, departmentId } = dto;
         const user = await this.prisma.user.findUnique({
             where: {
                 email,
@@ -64,11 +64,18 @@ let AuthService = class AuthService {
         if (user) {
             throw new common_1.ConflictException('Email already exists');
         }
+        const department = await this.prisma.department.findUnique({
+            where: { id: departmentId },
+        });
+        if (!department) {
+            throw new common_1.ConflictException('Department not found');
+        }
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await this.prisma.user.create({
             data: {
                 email,
                 password: hashedPassword,
+                departmentId,
             },
         });
         const { password: _, ...result } = newUser;

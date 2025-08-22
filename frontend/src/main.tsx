@@ -1,21 +1,22 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
+import './index.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import ErrorBoundary from './components/ErrorBoundary.tsx';
 import { ThemeProvider } from './components/ThemeProvider.tsx';
+import ErrorBoundary from './components/ErrorBoundary.tsx';
+import "react-mde/lib/styles/css/react-mde-all.css";
 
 const queryClient = new QueryClient();
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
           <App />
         </ThemeProvider>
       </QueryClientProvider>
     </ErrorBoundary>
-  </StrictMode>
+  </React.StrictMode>,
 );
