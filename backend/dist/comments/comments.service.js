@@ -12,14 +12,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommentsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const notifications_service_1 = require("../notifications/notifications.service");
 let CommentsService = class CommentsService {
     prisma;
-    constructor(prisma) {
+    notificationsService;
+    constructor(prisma, notificationsService) {
         this.prisma = prisma;
+        this.notificationsService = notificationsService;
     }
     async create(dto, authorId) {
         const { content, postId, parentId } = dto;
-        return this.prisma.comment.create({
+        const post = await this.prisma.post.findUnique({ where: { id: postId } });
+        if (!post) {
+            throw new common_1.ForbiddenException('Post not found');
+        }
+        const comment = await this.prisma.comment.create({
             data: {
                 content,
                 postId,
@@ -27,6 +34,13 @@ let CommentsService = class CommentsService {
                 parentId,
             },
         });
+        this.notificationsService.create({
+            recipientId: post.authorId,
+            senderId: authorId,
+            postId,
+            type: 'NEW_COMMENT',
+        });
+        return comment;
     }
     async findAllByPostId(postId) {
         return this.prisma.comment.findMany({
@@ -67,6 +81,7 @@ let CommentsService = class CommentsService {
 exports.CommentsService = CommentsService;
 exports.CommentsService = CommentsService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        notifications_service_1.NotificationsService])
 ], CommentsService);
 //# sourceMappingURL=comments.service.js.map

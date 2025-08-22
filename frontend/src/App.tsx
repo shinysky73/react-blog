@@ -13,6 +13,7 @@ const DashboardPage = lazy(() => import("./pages/Dashboard"));
 const CreatePostPage = lazy(() => import("./pages/CreatePostPage"));
 const EditPostPage = lazy(() => import("./pages/EditPostPage"));
 const PostDetailPage = lazy(() => import("./pages/PostDetailPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 
 function App() {
   const { checkAuth } = useAuthStore();
@@ -43,6 +44,7 @@ function App() {
               <Route path="/create-post" element={<CreatePostPage />} />
               <Route path="/edit-post/:postId" element={<EditPostPage />} />
               <Route path="/posts/:postId" element={<PostDetailPage />} />
+              <Route path="/profile/:userId" element={<ProfilePage />} />
             </Route>
           </Route>
         </Routes>

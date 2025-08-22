@@ -1,12 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { getPost, createComment, deleteComment, toggleLike } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useAuthStore } from "@/stores/authStore";
 import { toast } from "sonner";
-import { Heart, MessageSquare } from "lucide-react";
+import { Heart, MessageSquare, ArrowLeft } from "lucide-react";
 
 // Types
 interface Comment {
@@ -24,6 +24,7 @@ interface Post {
   title: string;
   content: string | null;
   author: {
+    id: number;
     email: string;
     department: {
       name: string;
@@ -96,7 +97,9 @@ export default function PostDetailPage() {
       {comments.map((c) => (
         <div key={c.id} className="flex flex-col">
           <div className="flex justify-between">
-            <p className="font-semibold">{c.author.email}</p>
+            <Link to={`/profile/${c.author.id}`} className="font-semibold hover:underline">
+              {c.author.email}
+            </Link>
             {user?.id === c.author.id && (
               <Button
                 variant="ghost"
@@ -115,9 +118,15 @@ export default function PostDetailPage() {
 
   return (
     <div className="container mx-auto py-8 max-w-3xl">
+      <Button asChild variant="ghost" className="mb-4">
+        <Link to="/dashboard">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Dashboard
+        </Link>
+      </Button>
       <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
       <div className="flex items-center gap-4 text-muted-foreground mb-8">
-        <span>By {post.author.email}</span>
+        <span>By <Link to={`/profile/${post.author.id}`} className="hover:underline">{post.author.email}</Link></span>
         <span>In {post.author.department.name}</span>
       </div>
       <div

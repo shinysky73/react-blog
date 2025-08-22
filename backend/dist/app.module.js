@@ -20,6 +20,7 @@ const categories_module_1 = require("./categories/categories.module");
 const tags_module_1 = require("./tags/tags.module");
 const comments_module_1 = require("./comments/comments.module");
 const likes_module_1 = require("./likes/likes.module");
+const notifications_module_1 = require("./notifications/notifications.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -38,6 +39,7 @@ exports.AppModule = AppModule = __decorate([
             tags_module_1.TagsModule,
             comments_module_1.CommentsModule,
             likes_module_1.LikesModule,
+            notifications_module_1.NotificationsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

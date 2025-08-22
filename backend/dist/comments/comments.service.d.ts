@@ -1,68 +1,70 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { NotificationsService } from 'src/notifications/notifications.service';
 export declare class CommentsService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private notificationsService;
+    constructor(prisma: PrismaService, notificationsService: NotificationsService);
     create(dto: CreateCommentDto, authorId: number): Promise<{
         id: number;
-        createdAt: Date;
-        updatedAt: Date;
         content: string;
         authorId: number;
-        parentId: number | null;
         postId: number;
+        parentId: number | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     findAllByPostId(postId: number): Promise<({
         author: {
+            id: number;
+            email: string;
             department: {
                 name: string;
             };
-            email: string;
-            id: number;
         };
         replies: ({
             author: {
+                id: number;
+                email: string;
                 department: {
                     name: string;
                 };
-                email: string;
-                id: number;
             };
         } & {
             id: number;
-            createdAt: Date;
-            updatedAt: Date;
             content: string;
             authorId: number;
-            parentId: number | null;
             postId: number;
+            parentId: number | null;
+            createdAt: Date;
+            updatedAt: Date;
         })[];
     } & {
         id: number;
-        createdAt: Date;
-        updatedAt: Date;
         content: string;
         authorId: number;
-        parentId: number | null;
         postId: number;
+        parentId: number | null;
+        createdAt: Date;
+        updatedAt: Date;
     })[]>;
     update(id: number, dto: UpdateCommentDto, authorId: number): Promise<{
         id: number;
-        createdAt: Date;
-        updatedAt: Date;
         content: string;
         authorId: number;
-        parentId: number | null;
         postId: number;
+        parentId: number | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     remove(id: number, authorId: number): Promise<{
         id: number;
-        createdAt: Date;
-        updatedAt: Date;
         content: string;
         authorId: number;
-        parentId: number | null;
         postId: number;
+        parentId: number | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
 }

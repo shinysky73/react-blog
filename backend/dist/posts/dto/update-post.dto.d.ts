@@ -6,4 +6,5 @@ export declare class UpdatePostDto {
     tagNames?: string[];
     status?: Status;
     visibility?: Visibility;
+    isAnnouncement?: boolean;
 }

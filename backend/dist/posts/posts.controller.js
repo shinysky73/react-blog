@@ -36,6 +36,9 @@ let PostsController = class PostsController {
         const userId = req.user.id;
         return this.postsService.findAllForUser(userId);
     }
+    findAllByAuthorId(authorId) {
+        return this.postsService.findAllByAuthorId(authorId);
+    }
     findOne(id, req) {
         const user = req.user;
         return this.postsService.findOne(id, user?.id);
@@ -74,6 +77,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], PostsController.prototype, "findAllForUser", null);
+__decorate([
+    (0, common_1.Get)('author/:authorId'),
+    __param(0, (0, common_1.Param)('authorId', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], PostsController.prototype, "findAllByAuthorId", null);
 __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     (0, common_1.Get)(':id'),

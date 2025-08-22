@@ -22,14 +22,18 @@ import { Link } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deletePost } from '@/lib/api';
 import { toast } from 'sonner';
-import { Heart } from 'lucide-react';
+import { Heart, MessageSquare, Eye } from 'lucide-react';
+import { Badge } from './ui/badge';
 
 interface PostCardProps {
   post: {
     id: number;
     title: string;
     content: string | null;
+    isAnnouncement?: boolean;
+    viewCount?: number;
     author?: {
+      id: number;
       email: string;
       department: {
         name: string;
@@ -37,13 +41,13 @@ interface PostCardProps {
     };
     _count: {
       likes: number;
+      comments?: number;
     };
   };
 }
 
 const PostCard = React.memo(({ post }: PostCardProps) => {
   const queryClient = useQueryClient();
-  console.log('PostCard rendered');
   const mutation = useMutation({
     mutationFn: () => deletePost(post.id),
     onSuccess: () => {
@@ -65,11 +69,25 @@ const PostCard = React.memo(({ post }: PostCardProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
-          <Link to={`/posts/${post.id}`} className="hover:underline">
-            {post.title}
-          </Link>
-        </CardTitle>
+        <div className="flex justify-between items-start">
+          <CardTitle>
+            <Link to={`/posts/${post.id}`} className="hover:underline">
+              {post.title}
+            </Link>
+          </CardTitle>
+          {post.isAnnouncement && <Badge>Announcement</Badge>}
+        </div>
+        {post.author && (
+          <p className="text-sm text-muted-foreground pt-2">
+            By{' '}
+            <Link
+              to={`/profile/${post.author.id}`}
+              className="hover:underline"
+            >
+              {post.author.email}
+            </Link>
+          </p>
+        )}
       </CardHeader>
       <CardContent className="h-40">
         <p className="text-sm text-muted-foreground line-clamp-6">
@@ -77,9 +95,23 @@ const PostCard = React.memo(({ post }: PostCardProps) => {
         </p>
       </CardContent>
       <CardFooter className="flex justify-between items-center">
-        <div className="flex items-center text-muted-foreground gap-1">
-          <Heart className="h-4 w-4" />
-          <span className="text-xs">{post._count.likes}</span>
+        <div className="flex items-center text-muted-foreground gap-3">
+          <div className="flex items-center gap-1">
+            <Heart className="h-4 w-4" />
+            <span className="text-xs">{post._count.likes}</span>
+          </div>
+          {post._count.comments !== undefined && (
+            <div className="flex items-center gap-1">
+              <MessageSquare className="h-4 w-4" />
+              <span className="text-xs">{post._count.comments}</span>
+            </div>
+          )}
+          {post.viewCount !== undefined && (
+            <div className="flex items-center gap-1">
+              <Eye className="h-4 w-4" />
+              <span className="text-xs">{post.viewCount}</span>
+            </div>
+          )}
         </div>
         <div className="flex gap-2">
           <Link to={`/edit-post/${post.id}`}>

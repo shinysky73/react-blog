@@ -10,7 +10,7 @@ export class PostsService {
   constructor(private prisma: PrismaService) {}
 
   async create(dto: CreatePostDto, userId: number) {
-    const { title, content, categoryIds, tagNames, status, visibility } = dto;
+    const { title, content, categoryIds, tagNames, status, visibility, isAnnouncement } = dto;
 
     const tags = tagNames ? await this.upsertTags(tagNames) : [];
 
@@ -20,6 +20,7 @@ export class PostsService {
         content,
         status,
         visibility,
+        isAnnouncement,
         authorId: userId,
         categories: {
           connect: categoryIds.map((id) => ({ id })),
@@ -74,9 +75,10 @@ export class PostsService {
             select: { likes: true },
           },
         },
-        orderBy: {
-          createdAt: 'desc',
-        },
+        orderBy: [
+          { isAnnouncement: 'desc' },
+          { createdAt: 'desc' },
+        ],
       }),
       this.prisma.post.count({ where }),
     ]);
@@ -98,6 +100,26 @@ export class PostsService {
         categories: true,
         tags: true,
         _count: {
+          select: { likes: true, comments: true },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+  async findAllByAuthorId(authorId: number) {
+    return this.prisma.post.findMany({
+      where: {
+        authorId,
+        status: 'PUBLISHED',
+        visibility: 'PUBLIC',
+      },
+      include: {
+        categories: true,
+        tags: true,
+        _count: {
           select: { likes: true },
         },
       },
@@ -108,37 +130,42 @@ export class PostsService {
   }
 
   async findOne(id: number, userId?: number) {
-    const post = await this.prisma.post.findUnique({
-      where: { id },
-      include: {
-        categories: true,
-        tags: true,
-        author: {
-          include: {
-            department: true,
-          },
-        },
-        comments: {
-          where: { parentId: null },
-          include: {
-            author: {
-              select: { id: true, email: true, department: { select: { name: true } } },
+    const [post] = await this.prisma.$transaction([
+      this.prisma.post.update({
+        where: { id },
+        data: { viewCount: { increment: 1 } },
+        include: {
+          categories: true,
+          tags: true,
+          author: {
+            select: {
+              id: true,
+              email: true,
+              department: true,
             },
-            replies: {
-              include: {
-                author: {
-                  select: { id: true, email: true, department: { select: { name: true } } },
+          },
+          comments: {
+            where: { parentId: null },
+            include: {
+              author: {
+                select: { id: true, email: true, department: { select: { name: true } } },
+              },
+              replies: {
+                include: {
+                  author: {
+                    select: { id: true, email: true, department: { select: { name: true } } },
+                  },
                 },
               },
             },
+            orderBy: { createdAt: 'asc' },
           },
-          orderBy: { createdAt: 'asc' },
+          _count: {
+            select: { likes: true },
+          },
         },
-        _count: {
-          select: { likes: true },
-        },
-      },
-    });
+      }),
+    ]);
 
     if (!post) return null;
 

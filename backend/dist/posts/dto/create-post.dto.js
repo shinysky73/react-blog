@@ -19,6 +19,7 @@ class CreatePostDto {
     tagNames;
     status;
     visibility;
+    isAnnouncement;
 }
 exports.CreatePostDto = CreatePostDto;
 __decorate([
@@ -52,4 +53,9 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], CreatePostDto.prototype, "visibility", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreatePostDto.prototype, "isAnnouncement", void 0);
 //# sourceMappingURL=create-post.dto.js.map

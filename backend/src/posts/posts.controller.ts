@@ -42,6 +42,10 @@ export class PostsController {
     return this.postsService.findAllForUser(userId);
   }
 
+  @Get('author/:authorId')
+  findAllByAuthorId(@Param('authorId', ParseIntPipe) authorId: number) {
+    return this.postsService.findAllByAuthorId(authorId);
+  }
 
   @UseGuards(AuthGuard('jwt'))
   @Get(':id')

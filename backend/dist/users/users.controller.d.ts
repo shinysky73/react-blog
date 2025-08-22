@@ -16,4 +16,17 @@ export declare class UsersController {
         createdAt: Date;
         updatedAt: Date;
     }>;
+    getUserProfile(id: number): Promise<{
+        department: {
+            id: number;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+        };
+        email: string;
+        departmentId: number;
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
 }

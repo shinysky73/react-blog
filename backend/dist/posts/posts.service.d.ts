@@ -7,25 +7,30 @@ export declare class PostsService {
     constructor(prisma: PrismaService);
     create(dto: CreatePostDto, userId: number): Promise<{
         id: number;
-        title: string;
-        content: string | null;
-        authorId: number;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
+        content: string | null;
         status: import("../../generated/prisma").$Enums.Status;
         visibility: import("../../generated/prisma").$Enums.Visibility;
+        isAnnouncement: boolean;
+        authorId: number;
+        viewCount: number;
     }>;
     findAllPublic(query: FindAllPostsDto): Promise<{
         data: ({
+            _count: {
+                likes: number;
+            };
             author: {
-                id: number;
-                email: string;
                 department: {
                     id: number;
                     createdAt: Date;
                     updatedAt: Date;
                     name: string;
                 };
+                email: string;
+                id: number;
             };
             categories: {
                 id: number;
@@ -39,24 +44,27 @@ export declare class PostsService {
                 updatedAt: Date;
                 name: string;
             }[];
-            _count: {
-                likes: number;
-            };
         } & {
             id: number;
-            title: string;
-            content: string | null;
-            authorId: number;
             createdAt: Date;
             updatedAt: Date;
+            title: string;
+            content: string | null;
             status: import("../../generated/prisma").$Enums.Status;
             visibility: import("../../generated/prisma").$Enums.Visibility;
+            isAnnouncement: boolean;
+            authorId: number;
+            viewCount: number;
         })[];
         page: number;
         limit: number;
         total: number;
     }>;
     findAllForUser(userId: number): Promise<({
+        _count: {
+            comments: number;
+            likes: number;
+        };
         categories: {
             id: number;
             createdAt: Date;
@@ -69,21 +77,85 @@ export declare class PostsService {
             updatedAt: Date;
             name: string;
         }[];
+    } & {
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        content: string | null;
+        status: import("../../generated/prisma").$Enums.Status;
+        visibility: import("../../generated/prisma").$Enums.Visibility;
+        isAnnouncement: boolean;
+        authorId: number;
+        viewCount: number;
+    })[]>;
+    findAllByAuthorId(authorId: number): Promise<({
         _count: {
             likes: number;
         };
+        categories: {
+            id: number;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+        }[];
+        tags: {
+            id: number;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+        }[];
     } & {
         id: number;
-        title: string;
-        content: string | null;
-        authorId: number;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
+        content: string | null;
         status: import("../../generated/prisma").$Enums.Status;
         visibility: import("../../generated/prisma").$Enums.Visibility;
+        isAnnouncement: boolean;
+        authorId: number;
+        viewCount: number;
     })[]>;
     findOne(id: number, userId?: number): Promise<{
         userHasLiked: boolean;
+        comments: ({
+            author: {
+                department: {
+                    name: string;
+                };
+                email: string;
+                id: number;
+            };
+            replies: ({
+                author: {
+                    department: {
+                        name: string;
+                    };
+                    email: string;
+                    id: number;
+                };
+            } & {
+                id: number;
+                createdAt: Date;
+                updatedAt: Date;
+                content: string;
+                authorId: number;
+                parentId: number | null;
+                postId: number;
+            })[];
+        } & {
+            id: number;
+            createdAt: Date;
+            updatedAt: Date;
+            content: string;
+            authorId: number;
+            parentId: number | null;
+            postId: number;
+        })[];
+        _count: {
+            likes: number;
+        };
         author: {
             department: {
                 id: number;
@@ -91,13 +163,8 @@ export declare class PostsService {
                 updatedAt: Date;
                 name: string;
             };
-        } & {
-            id: number;
-            createdAt: Date;
-            updatedAt: Date;
             email: string;
-            password: string;
-            departmentId: number;
+            id: number;
         };
         categories: {
             id: number;
@@ -111,71 +178,40 @@ export declare class PostsService {
             updatedAt: Date;
             name: string;
         }[];
-        comments: ({
-            author: {
-                id: number;
-                email: string;
-                department: {
-                    name: string;
-                };
-            };
-            replies: ({
-                author: {
-                    id: number;
-                    email: string;
-                    department: {
-                        name: string;
-                    };
-                };
-            } & {
-                id: number;
-                content: string;
-                authorId: number;
-                createdAt: Date;
-                updatedAt: Date;
-                parentId: number | null;
-                postId: number;
-            })[];
-        } & {
-            id: number;
-            content: string;
-            authorId: number;
-            createdAt: Date;
-            updatedAt: Date;
-            parentId: number | null;
-            postId: number;
-        })[];
-        _count: {
-            likes: number;
-        };
         id: number;
-        title: string;
-        content: string | null;
-        authorId: number;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
+        content: string | null;
         status: import("../../generated/prisma").$Enums.Status;
         visibility: import("../../generated/prisma").$Enums.Visibility;
+        isAnnouncement: boolean;
+        authorId: number;
+        viewCount: number;
     } | null>;
     update(id: number, dto: UpdatePostDto, userId: number): Promise<{
         id: number;
-        title: string;
-        content: string | null;
-        authorId: number;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
+        content: string | null;
         status: import("../../generated/prisma").$Enums.Status;
         visibility: import("../../generated/prisma").$Enums.Visibility;
+        isAnnouncement: boolean;
+        authorId: number;
+        viewCount: number;
     }>;
     remove(id: number, userId: number): Promise<{
         id: number;
-        title: string;
-        content: string | null;
-        authorId: number;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
+        content: string | null;
         status: import("../../generated/prisma").$Enums.Status;
         visibility: import("../../generated/prisma").$Enums.Visibility;
+        isAnnouncement: boolean;
+        authorId: number;
+        viewCount: number;
     }>;
     private upsertTags;
 }

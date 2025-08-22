@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -33,4 +34,8 @@ export class CreatePostDto {
   @IsEnum(Visibility)
   @IsOptional()
   visibility?: Visibility;
+
+  @IsBoolean()
+  @IsOptional()
+  isAnnouncement?: boolean;
 }

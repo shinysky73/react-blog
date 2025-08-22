@@ -19,6 +19,7 @@ class UpdatePostDto {
     tagNames;
     status;
     visibility;
+    isAnnouncement;
 }
 exports.UpdatePostDto = UpdatePostDto;
 __decorate([
@@ -53,4 +54,9 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdatePostDto.prototype, "visibility", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], UpdatePostDto.prototype, "isAnnouncement", void 0);
 //# sourceMappingURL=update-post.dto.js.map

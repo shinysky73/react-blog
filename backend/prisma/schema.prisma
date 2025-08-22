@@ -15,32 +15,37 @@ datasource db {
 }
 
 model User {
-  id           Int        @id @default(autoincrement())
-  email        String     @unique
-  password     String
-  posts        Post[]
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  department   Department @relation(fields: [departmentId], references: [id])
-  departmentId Int
-  comments     Comment[]
-  likes        Like[]
+  id                Int            @id @default(autoincrement())
+  email             String         @unique
+  password          String
+  posts             Post[]
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  department        Department     @relation(fields: [departmentId], references: [id])
+  departmentId      Int
+  comments          Comment[]
+  likes             Like[]
+  notifications     Notification[] @relation("notifications")
+  sentNotifications Notification[] @relation("sentNotifications")
 }
 
 model Post {
-  id         Int          @id @default(autoincrement())
-  title      String
-  content    String?
-  author     User         @relation(fields: [authorId], references: [id])
-  authorId   Int
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  categories Category[]
-  tags       Tag[]
-  status     Status       @default(DRAFT)
-  visibility Visibility   @default(PRIVATE)
-  comments   Comment[]
-  likes      Like[]
+  id             Int            @id @default(autoincrement())
+  title          String
+  content        String?
+  author         User           @relation(fields: [authorId], references: [id])
+  authorId       Int
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  categories     Category[]
+  tags           Tag[]
+  status         Status         @default(DRAFT)
+  visibility     Visibility     @default(PRIVATE)
+  isAnnouncement Boolean        @default(false)
+  viewCount      Int            @default(0)
+  comments       Comment[]
+  likes          Like[]
+  notifications  Notification[]
 }
 
 enum Status {
@@ -99,4 +104,17 @@ model Like {
   createdAt DateTime @default(now())
 
   @@id([userId, postId])
+}
+
+model Notification {
+  id          Int      @id @default(autoincrement())
+  type        String // NEW_COMMENT, NEW_LIKE
+  read        Boolean  @default(false)
+  recipient   User     @relation("notifications", fields: [recipientId], references: [id])
+  recipientId Int
+  sender      User     @relation("sentNotifications", fields: [senderId], references: [id])
+  senderId    Int
+  post        Post     @relation(fields: [postId], references: [id])
+  postId      Int
+  createdAt   DateTime @default(now())
 }

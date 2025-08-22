@@ -12,10 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LikesService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const notifications_service_1 = require("../notifications/notifications.service");
 let LikesService = class LikesService {
     prisma;
-    constructor(prisma) {
+    notificationsService;
+    constructor(prisma, notificationsService) {
         this.prisma = prisma;
+        this.notificationsService = notificationsService;
     }
     async toggleLike(postId, userId) {
         const like = await this.prisma.like.findUnique({
@@ -38,11 +41,21 @@ let LikesService = class LikesService {
             return { liked: false };
         }
         else {
+            const post = await this.prisma.post.findUnique({ where: { id: postId } });
+            if (!post) {
+                throw new Error('Post not found');
+            }
             await this.prisma.like.create({
                 data: {
                     userId,
                     postId,
                 },
+            });
+            this.notificationsService.create({
+                recipientId: post.authorId,
+                senderId: userId,
+                postId,
+                type: 'NEW_LIKE',
             });
             return { liked: true };
         }
@@ -51,6 +64,7 @@ let LikesService = class LikesService {
 exports.LikesService = LikesService;
 exports.LikesService = LikesService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        notifications_service_1.NotificationsService])
 ], LikesService);
 //# sourceMappingURL=likes.service.js.map

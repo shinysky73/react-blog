@@ -18,6 +18,7 @@ interface Post {
   title: string;
   content: string | null;
   author: {
+    id: number;
     email: string;
     department: {
       name: string;
@@ -94,19 +95,30 @@ export default function HomePage() {
             ))}
           </div>
         )}
-        {postsData?.data?.length === 0 && <p>No posts found.</p>}
+        {postsData?.data?.length === 0 && (
+          <div className="flex justify-center items-center h-64">
+            <p className="text-muted-foreground">No posts found.</p>
+          </div>
+        )}
       </div>
 
       <div className="flex justify-center items-center gap-4 mt-8">
-        <Button onClick={() => setPage(page - 1)} disabled={page === 1}>
-          Previous
-        </Button>
-        <span>
-          Page {page} of {totalPages}
-        </span>
-        <Button onClick={() => setPage(page + 1)} disabled={page === totalPages}>
-          Next
-        </Button>
+        {postsData && postsData.total > 0 && (
+          <>
+            <Button onClick={() => setPage(page - 1)} disabled={page === 1}>
+              Previous
+            </Button>
+            <span>
+              Page {page} of {totalPages}
+            </span>
+            <Button
+              onClick={() => setPage(page + 1)}
+              disabled={page >= totalPages}
+            >
+              Next
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );

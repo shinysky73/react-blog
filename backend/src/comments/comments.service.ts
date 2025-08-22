@@ -2,14 +2,24 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class CommentsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private notificationsService: NotificationsService,
+  ) {}
 
   async create(dto: CreateCommentDto, authorId: number) {
     const { content, postId, parentId } = dto;
-    return this.prisma.comment.create({
+
+    const post = await this.prisma.post.findUnique({ where: { id: postId } });
+    if (!post) {
+      throw new ForbiddenException('Post not found');
+    }
+
+    const comment = await this.prisma.comment.create({
       data: {
         content,
         postId,
@@ -17,6 +27,16 @@ export class CommentsService {
         parentId,
       },
     });
+
+    // Create notification for the post author
+    this.notificationsService.create({
+      recipientId: post.authorId,
+      senderId: authorId,
+      postId,
+      type: 'NEW_COMMENT',
+    });
+
+    return comment;
   }
 
   async findAllByPostId(postId: number) {

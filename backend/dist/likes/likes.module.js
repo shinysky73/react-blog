@@ -11,12 +11,13 @@ const common_1 = require("@nestjs/common");
 const likes_controller_1 = require("./likes.controller");
 const likes_service_1 = require("./likes.service");
 const prisma_module_1 = require("../prisma/prisma.module");
+const notifications_module_1 = require("../notifications/notifications.module");
 let LikesModule = class LikesModule {
 };
 exports.LikesModule = LikesModule;
 exports.LikesModule = LikesModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule],
+        imports: [prisma_module_1.PrismaModule, notifications_module_1.NotificationsModule],
         controllers: [likes_controller_1.LikesController],
         providers: [likes_service_1.LikesService],
     })

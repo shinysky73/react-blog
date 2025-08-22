@@ -18,7 +18,7 @@ let PostsService = class PostsService {
         this.prisma = prisma;
     }
     async create(dto, userId) {
-        const { title, content, categoryIds, tagNames, status, visibility } = dto;
+        const { title, content, categoryIds, tagNames, status, visibility, isAnnouncement } = dto;
         const tags = tagNames ? await this.upsertTags(tagNames) : [];
         return this.prisma.post.create({
             data: {
@@ -26,6 +26,7 @@ let PostsService = class PostsService {
                 content,
                 status,
                 visibility,
+                isAnnouncement,
                 authorId: userId,
                 categories: {
                     connect: categoryIds.map((id) => ({ id })),
@@ -75,9 +76,10 @@ let PostsService = class PostsService {
                         select: { likes: true },
                     },
                 },
-                orderBy: {
-                    createdAt: 'desc',
-                },
+                orderBy: [
+                    { isAnnouncement: 'desc' },
+                    { createdAt: 'desc' },
+                ],
             }),
             this.prisma.post.count({ where }),
         ]);
@@ -97,6 +99,25 @@ let PostsService = class PostsService {
                 categories: true,
                 tags: true,
                 _count: {
+                    select: { likes: true, comments: true },
+                },
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+    }
+    async findAllByAuthorId(authorId) {
+        return this.prisma.post.findMany({
+            where: {
+                authorId,
+                status: 'PUBLISHED',
+                visibility: 'PUBLIC',
+            },
+            include: {
+                categories: true,
+                tags: true,
+                _count: {
                     select: { likes: true },
                 },
             },
@@ -106,37 +127,42 @@ let PostsService = class PostsService {
         });
     }
     async findOne(id, userId) {
-        const post = await this.prisma.post.findUnique({
-            where: { id },
-            include: {
-                categories: true,
-                tags: true,
-                author: {
-                    include: {
-                        department: true,
-                    },
-                },
-                comments: {
-                    where: { parentId: null },
-                    include: {
-                        author: {
-                            select: { id: true, email: true, department: { select: { name: true } } },
+        const [post] = await this.prisma.$transaction([
+            this.prisma.post.update({
+                where: { id },
+                data: { viewCount: { increment: 1 } },
+                include: {
+                    categories: true,
+                    tags: true,
+                    author: {
+                        select: {
+                            id: true,
+                            email: true,
+                            department: true,
                         },
-                        replies: {
-                            include: {
-                                author: {
-                                    select: { id: true, email: true, department: { select: { name: true } } },
+                    },
+                    comments: {
+                        where: { parentId: null },
+                        include: {
+                            author: {
+                                select: { id: true, email: true, department: { select: { name: true } } },
+                            },
+                            replies: {
+                                include: {
+                                    author: {
+                                        select: { id: true, email: true, department: { select: { name: true } } },
+                                    },
                                 },
                             },
                         },
+                        orderBy: { createdAt: 'asc' },
                     },
-                    orderBy: { createdAt: 'asc' },
+                    _count: {
+                        select: { likes: true },
+                    },
                 },
-                _count: {
-                    select: { likes: true },
-                },
-            },
-        });
+            }),
+        ]);
         if (!post)
             return null;
         let userHasLiked = false;

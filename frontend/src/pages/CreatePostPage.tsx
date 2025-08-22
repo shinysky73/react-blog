@@ -33,6 +33,7 @@ const createPostSchema = z.object({
     .transform((val) => val?.split(",").map((tag) => tag.trim()) || []),
   status: z.enum(["DRAFT", "PUBLISHED"]).default("DRAFT"),
   visibility: z.enum(["PUBLIC", "PRIVATE"]).default("PRIVATE"),
+  isAnnouncement: z.boolean().default(false),
 });
 
 type CreatePostSchema = z.infer<typeof createPostSchema>;
@@ -230,6 +231,22 @@ export default function CreatePostPage() {
                   </RadioGroup>
                 )}
               />
+            </div>
+
+            {/* isAnnouncement */}
+            <div className="flex items-center space-x-2">
+              <Controller
+                name="isAnnouncement"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    id="isAnnouncement"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
+              <Label htmlFor="isAnnouncement">Set as Announcement</Label>
             </div>
 
             <Button

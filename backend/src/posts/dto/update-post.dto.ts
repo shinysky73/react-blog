@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsNumber,
   IsOptional,
@@ -33,4 +34,8 @@ export class UpdatePostDto {
   @IsEnum(Visibility)
   @IsOptional()
   visibility?: Visibility;
+
+  @IsBoolean()
+  @IsOptional()
+  isAnnouncement?: boolean;
 }
